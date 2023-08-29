@@ -63,8 +63,6 @@ for element in tab_global:
 
 for t in tokens_global:
     print(t)
-
-    
         
 
         
