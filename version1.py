@@ -9,6 +9,8 @@ Created on Tue Aug 29 16:29:14 2023
 mots_cles = ['EOF','+','-','*','/','%','!','&','<',"<=",'>',">=","==","!=","&&","||",'(',')','[',']','{',
             '}',',',';','=',"int","for","while","do","if","else","break","continue","return"]
 
+tab_global = []
+tokens_global= []
 
 
 class token:
@@ -29,14 +31,27 @@ class interface_lex_syn:
         self.actuel = actuel
         self.last = last
         
+"################################################# Next ##############################################################################"
 
+currentind = -1
+current_token = token("","")
+last_token = token("","")
+
+def next():
+    global currentind
+    global tokens_global
+    last_token.type_ = current_token.type_
+    last_token.valeur = current_token.valeur
+    currentind =  currentind + 1
+    current_token.type_ = tokens_global[ currentind].type_
+    current_token.valeur = tokens_global[ currentind].valeur
     
 "################################################# Analyse lexicale ##################################################################"
 def init_analyse_lexicale(codesource):
     file = open(codesource,"r")
     line = file.readline()
-    tab_global = []
-    tokens_global =[]
+    global tab_global 
+    global tokens_global 
     while( not (line == "")):
         line= line.strip('\n')
         line= line.strip(' ')
@@ -69,9 +84,25 @@ def init_analyse_lexicale(codesource):
     for t in tokens_global:
         print(t)
  
-"################################################################################################################################################"       
+    
+    
+"######################################################## Main ########################################################################"       
+
 
 
 init_analyse_lexicale("codesource.c")
+next()
+print(current_token.type_)
+print(current_token.valeur)
+
+print(last_token.type_)
+print(last_token.valeur)
+
+next()
+print(current_token.type_)
+print(current_token.valeur)
+
+print(last_token.type_)
+print(last_token.valeur)
         
     
