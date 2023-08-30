@@ -31,13 +31,15 @@ class interface_lex_syn:
         
 "################################################# Analyse lexicale ##################################################################"
 
-file = open("C:/Users/lokes/OneDrive/Desktop/codesource.c","r")
+file = open("codesource2.c","r")
 line = file.readline()
 tab_global = []
 tokens_global =[]
 while( not (line == "")):
+    line= line.strip('\n')
     tab_temp = line.rsplit(' ')
     for element in tab_temp:
+        
         tab_global.append(element)
     line = file.readline()
 
@@ -59,7 +61,7 @@ for element in tab_global:
         else:
             print("Error")
 
-#print(tab_global)
+print(tab_global)
 
 for t in tokens_global:
     print(t)
