@@ -19,7 +19,7 @@ class token:
         if(self.valeur == None):
             return "type : "+self.type_
         else:
-            return "type : "+self.type_+" ; valeur : "+self.valeur
+            return "type : "+self.type_+" ; valeur : "+str(self.valeur)
         
     
     
@@ -37,6 +37,7 @@ tab_global = []
 tokens_global =[]
 while( not (line == "")):
     line= line.strip('\n')
+    line= line.strip(' ')
     tab_temp = line.rsplit(' ')
     for element in tab_temp:
         
@@ -53,7 +54,7 @@ for element in tab_global:
             break
     if(not m):
         if (element.isnumeric()):
-            tokens_global.append(token("const",element))
+            tokens_global.append(token("const",int(element)))
         elif(element.isidentifier()):
             tokens_global.append(token("identificateur",element))
         elif(element== "\n"):
