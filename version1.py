@@ -29,44 +29,49 @@ class interface_lex_syn:
         self.actuel = actuel
         self.last = last
         
+
+    
 "################################################# Analyse lexicale ##################################################################"
-
-file = open("codesource2.c","r")
-line = file.readline()
-tab_global = []
-tokens_global =[]
-while( not (line == "")):
-    line= line.strip('\n')
-    line= line.strip(' ')
-    tab_temp = line.rsplit(' ')
-    for element in tab_temp:
-        
-        tab_global.append(element)
+def init_analyse_lexicale(codesource):
+    file = open(codesource,"r")
     line = file.readline()
+    tab_global = []
+    tokens_global =[]
+    while( not (line == "")):
+        line= line.strip('\n')
+        line= line.strip(' ')
+        tab_temp = line.rsplit(' ')
+        if(line != ''):
+            for element in tab_temp:
+                tab_global.append(element)
+        line = file.readline()
 
-for element in tab_global:
-    m = False
-    for mot_cle in mots_cles:
-        if mot_cle == element :
-            tokens_global.append(token(mot_cle,None))
-            #print("found the token : "+ mot_cle)
-            m = True
-            break
-    if(not m):
-        if (element.isnumeric()):
-            tokens_global.append(token("const",int(element)))
-        elif(element.isidentifier()):
-            tokens_global.append(token("identificateur",element))
-        elif(element== "\n"):
-            continue
-        else:
-            print("Error")
+    for element in tab_global:
+        m = False
+        for mot_cle in mots_cles:
+            if mot_cle == element :
+                tokens_global.append(token(mot_cle,None))
+                #print("found the token : "+ mot_cle)
+                m = True
+                break
+        if(not m):
+            if (element.isnumeric()):
+                tokens_global.append(token("const",int(element)))
+            elif(element.isidentifier()):
+                tokens_global.append(token("identificateur",element))
+            elif(element== "\n"):
+                continue
+            else:
+                print("Error")
 
-print(tab_global)
+    print(tab_global)
 
-for t in tokens_global:
-    print(t)
-        
+    for t in tokens_global:
+        print(t)
+ 
+"################################################################################################################################################"       
 
+
+init_analyse_lexicale("codesource.c")
         
     
