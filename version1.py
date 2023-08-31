@@ -7,7 +7,7 @@ Created on Tue Aug 29 16:29:14 2023
 
 
 mots_cles = ['EOF','+','-','*','/','%','!','&','<',"<=",'>',">=","==","!=","&&","||",'(',')','[',']','{',
-            '}',',',';','=',"int","for","while","do","if","else","break","continue","return"]
+            '}',',',';','=','\n',"int","for","while","do","if","else","break","continue","return"]
 
 tab_global = []
 tokens_global= []
@@ -71,22 +71,27 @@ def accept(T):
 "################################################# Analyse lexicale ##################################################################"
 def init_analyse_lexicale(codesource):
     file = open(codesource,"r")
-    line = file.read()
+    content = file.read()
     global tab_global 
     global tokens_global 
-    ######################
-    print(line)
-    #######################line.strip(' ')
-    tab_global = line.split(' ')
-
+    print("printing the contents of the file : \n" + content)
+    content.strip(' ')
+    lines = content.split('\n')
+    for line in lines :
+        elements = line.split(' ')
+        for element in elements:
+            if(element != ''):
+                tab_global.append(element)
+        tab_global.append('\n')
 
     tab_global.append('EOF')
+    print("printing the elements in the tab : \n"+str(tab_global))
+    
     for element in tab_global:
         m = False
         for mot_cle in mots_cles:
             if mot_cle == element :
                 tokens_global.append(token(mot_cle,None))
-                #print("found the token : "+ mot_cle)
                 m = True
                 break
         if(not m):
@@ -97,9 +102,8 @@ def init_analyse_lexicale(codesource):
             elif(element== "\n"):
                 continue
             else:
-                print("Error")
+                raise Exception("Error :  " + str(element))
 
-    print(tab_global)
 
     for t in tokens_global:
         print(t)
@@ -137,7 +141,6 @@ def noeudA():
         N = noeudE(0)
         accept(')')
         return N
-    #############
     else:
         print("error")
 
@@ -147,7 +150,6 @@ def noeudA():
 def noeudP():
     if(check('-')):
         N = noeudP()
-        
         return Noeud('-',N)
     elif(check('!')):
         N = noeudP()
@@ -164,24 +166,28 @@ def noeudP():
 
 "######################################################### Noeud E ####################################################################"
 operateurs = {
-    '=' : ['=',None,1,1],
-    '||': ['||',None,2,0],
-    '&&': ['&&',None,3,0],
-    '==': ['==',None,4,0],
-    '!=': ['!=',None,4,0],
-    '<':['<',None,5,0],
-    '<=':['<=',None,5,0],
-    '>':['>',None,5,0],
-    '>=':['>=',None,5,0],
-    '+':['+',None,6,0],
-    '-':['-',None,6,0],
-    '*':['*',None,7,0],
-    '/':['/',None,7,0],
-    '%':['%',None,7,0]
+    '=' : ['='  ,None ,1 ,1],
+    '||': ['||' ,None ,2 ,0],
+    '&&': ['&&' ,None ,3 ,0],
+    '==': ['==' ,None ,4 ,0],
+    '!=': ['!=' ,None ,4 ,0],
+    '<' : ['<'  ,None ,5 ,0],
+    '<=': ['<=' ,None ,5 ,0],
+    '>' : ['>'  ,None ,5 ,0],
+    '>=': ['>=' ,None ,5 ,0],
+    '+' : ['+'  ,None ,6 ,0],
+    '-' : ['-'  ,None ,6 ,0],
+    '*' : ['*'  ,None ,7 ,0],
+    '/' : ['/'  ,None ,7 ,0],
+    '%' : ['%'  ,None ,7 ,0]
 }
 
 def noeudE(prio_min):
     global current_token
+    global current_line
+    if(current_token.type_ == '\n'):
+        current_line = current_line + 1
+        return None
     N = noeudP()
     
     while(operateurs.get(current_token.type_) != None): 
@@ -196,11 +202,13 @@ def noeudE(prio_min):
 "######################################################### Gencode ####################################################################"
 
 def gencode(N):
-    if(N.type_ == 'const'):
+    if(N == None):
+        print("nothing")
+    elif(N.type_ == 'const'):
         print("push "+ str(N.valeur))
     else:
-        gencode(N.enfant[0])
-        gencode(N.enfant[1])
+        for k in range(len(N.enfant)):
+            gencode(N.enfant[k])
         print(N.type_)
 
 
@@ -209,13 +217,13 @@ def gencode(N):
 
 
 
-init_analyse_lexicale("codesource.c")
-next()
-print("\n \n")
-A = noeudE(0)
-#gencode(A)
+init_analyse_lexicale("C:/Users/lokes/OneDrive/Desktop/codesource.c")
+while(currentind < len(tokens_global)):
+    next()
+    print("\n \n")
+    A = noeudE(0)
+    gencode(A)
 
 
         
-
 
