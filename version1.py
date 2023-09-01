@@ -46,8 +46,8 @@ def next():
     last_token.type_ = current_token.type_
     last_token.valeur = current_token.valeur
     currentind =  currentind + 1
-    current_token.type_ = tokens_global[ currentind].type_
-    current_token.valeur = tokens_global[ currentind].valeur
+    current_token.type_ = tokens_global[currentind].type_
+    current_token.valeur = tokens_global[currentind].valeur
 
     
 "################################################# Check ##############################################################################"
@@ -99,8 +99,6 @@ def init_analyse_lexicale(codesource):
                 tokens_global.append(token('const',int(element)))
             elif(element.isidentifier()):
                 tokens_global.append(token('identificateur',element))
-            elif(element== "\n"):
-                continue
             else:
                 raise Exception("Error :  " + str(element))
 
@@ -189,7 +187,6 @@ def noeudE(prio_min):
         current_line = current_line + 1
         return None
     N = noeudP()
-    
     while(operateurs.get(current_token.type_) != None): 
         op = operateurs.get(current_token.type_)
         if(op[2] <= prio_min):
@@ -202,8 +199,9 @@ def noeudE(prio_min):
 "######################################################### Gencode ####################################################################"
 
 def gencode(N):
+    
     if(N == None):
-        print("nothing")
+        print("newline")
     elif(N.type_ == 'const'):
         print("push "+ str(N.valeur))
     else:
@@ -217,13 +215,13 @@ def gencode(N):
 
 
 
-init_analyse_lexicale("C:/Users/lokes/OneDrive/Desktop/codesource.c")
-while(currentind < len(tokens_global)):
+init_analyse_lexicale("codesource.c")
+print("********************* Generation du code ***************************")
+while(current_token.type_ != 'EOF'):
     next()
-    print("\n \n")
+    print("\n")
     A = noeudE(0)
     gencode(A)
 
 
         
-
