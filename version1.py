@@ -99,6 +99,8 @@ def init_analyse_lexicale(codesource):
                 tokens_global.append(token('const',int(element)))
             elif(element.isidentifier()):
                 tokens_global.append(token('identificateur',element))
+            elif(element == '\n'):
+                tokens_global.append(token('\n',None))
             else:
                 raise Exception("Error :  " + str(element))
 
@@ -118,9 +120,9 @@ class Noeud:
 
     
     def __str__(self):
-        out = str(self.type_)
+        out = "parent : "+str(self.type_)
         for i in range (0,len(self.enfant)):
-            out = out +' ' + str(self.enfant[i].type_)
+            out = out +' enfant'+str(i)+': ' + str(self.enfant[i].type_)
         return out
             
         
@@ -131,6 +133,8 @@ class Noeud:
 
     
 def noeudA():
+    global current_token
+    global current_line
     if(check("const")):
         return Noeud("const",last_token.valeur,[])
     elif(check("identificateur")):
@@ -139,6 +143,10 @@ def noeudA():
         N = noeudE(0)
         accept(')')
         return N
+    elif(check('\n')):
+            print("entered here")
+            current_line = current_line + 1
+            return noeudA()
     else:
         print("error")
 
@@ -148,12 +156,13 @@ def noeudA():
 def noeudP():
     if(check('-')):
         N = noeudP()
-        return Noeud('-',N)
+        return Noeud('-u',None,[N])
     elif(check('!')):
         N = noeudP()
-        return Noeud('!',N)
+        return Noeud('!',None,N)
     elif(check('+')):
         N = noeudP()
+        print("printing from nouedP"+ str(N))
         return N
     else:
         N = noeudA()
@@ -164,7 +173,7 @@ def noeudP():
 
 "######################################################### Noeud E ####################################################################"
 operateurs = {
-    '=' : ['='  ,None ,1 ,1],
+    '=' : ['='  ,None ,1 ,1], 
     '||': ['||' ,None ,2 ,0],
     '&&': ['&&' ,None ,3 ,0],
     '==': ['==' ,None ,4 ,0],
@@ -177,17 +186,21 @@ operateurs = {
     '-' : ['-'  ,None ,6 ,0],
     '*' : ['*'  ,None ,7 ,0],
     '/' : ['/'  ,None ,7 ,0],
-    '%' : ['%'  ,None ,7 ,0]
+    '%' : ['%'  ,None ,7 ,0],
 }
 
 def noeudE(prio_min):
     global current_token
     global current_line
-    if(current_token.type_ == '\n'):
-        current_line = current_line + 1
+    if(current_token.type_ == 'EOF'):
+        print("end of file found")
         return None
+    
+    
+    
     N = noeudP()
-    while(operateurs.get(current_token.type_) != None): 
+    while(operateurs.get(current_token.type_) != None):
+        
         op = operateurs.get(current_token.type_)
         if(op[2] <= prio_min):
             break
@@ -198,16 +211,40 @@ def noeudE(prio_min):
 
 "######################################################### Gencode ####################################################################"
 
+dict_gencode = {
+    '='     :'',
+    '||'    :'or',
+    '&&'    :'and',
+    '=='    :'cmpeq',
+    '!='    :'cmpne',
+    '<'     :'cmplt',
+    '<='    :'cmple',
+    '>'     :'cmpgt',
+    '>='    :'cmpge',
+    '+'     :'add',
+    '-'     :'sub',
+    '*'     :'mul',
+    '/'     :'div',
+    '%'     :'mod',
+    '!'     :'not'
+        }
+
 def gencode(N):
-    
-    if(N == None):
-        print("newline")
-    elif(N.type_ == 'const'):
+ 
+    if(N.type_ == 'const'):
         print("push "+ str(N.valeur))
+    elif(N.type_ == '-u'):
+        print("push 0")
+        print("push "+ str(N.enfant[0].valeur))
+        print("sub")
+      
     else:
         for k in range(len(N.enfant)):
             gencode(N.enfant[k])
-        print(N.type_)
+        if(dict_gencode[N.type_] != None):
+            print(dict_gencode[N.type_])
+        else:
+            raise Exception("Error Fatal")
 
 
     
@@ -216,12 +253,14 @@ def gencode(N):
 
 
 init_analyse_lexicale("codesource.c")
+next()
 print("********************* Generation du code ***************************")
 while(current_token.type_ != 'EOF'):
-    next()
     print("\n")
     A = noeudE(0)
+    #print(A)
     gencode(A)
+    next()
 
 
         
