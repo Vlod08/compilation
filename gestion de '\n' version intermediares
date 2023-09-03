@@ -149,7 +149,7 @@ def noeudA():
         accept(')')
         return N
     elif(check('\n')):
-        N = noeudE(operateurs['\n'])
+        N = noeudA()
         return Noeud('\n', None, [N])
     elif(check('EOF')):
         return Noeud('EOF',None,[])
@@ -168,7 +168,6 @@ def noeudP():
         return Noeud('!',None,N)
     elif(check('+')):
         N = noeudP()
-        print("printing from nouedP"+ str(N))
         return N
     else:
         N = noeudA()
@@ -205,8 +204,9 @@ def noeudE(prio_min):
         return Noeud('EOF',None,[])
     N = noeudP()
     while(operateurs.get(current_token.type_) != None):
-        
+        #print("called for the operator : "+str(current_token.type_))
         op = operateurs.get(current_token.type_)
+        print(op)
         if(op[2] <= prio_min):
             break
         next()
@@ -269,4 +269,20 @@ while(current_token.type_ != 'EOF'):
     next()
 
 
-        
+def optimisation_const(N):
+    if(len(N.enfant_) == 0):
+        return N
+    else:
+        G = optimisation_const(N.enfant[0]) 
+        if(len(N.enfant) >1):
+            D = optimisation_const(N.enfant[1])
+            if(G.type_ == 'const' and D.type_ == 'const'):
+                exp = str(G.type_) + str(N.type_) + str(D.type_)
+                return Noeud('const',eval(exp),[])
+            else:
+                N.enfant[1] = D
+                
+        N.enfant[0] = G
+        return N    
+
+
