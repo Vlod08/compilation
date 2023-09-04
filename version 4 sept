@@ -278,37 +278,39 @@ class S:
         self.nom = nom 
         
     
-
 Vars = []
 
 def declarer(nom):
-    global Vars
-    
-    if (Vars[len(Vars)-1][nom] != None):
-            raise Exception("Error élément déjà déclaré")
-    else:
-
-    S = nom
-    Vars.insert(0,S)
-    return S
+    global Vars 
+    for i in range (len(Vars) - 1, -1, -1):
+        if(Vars[i].nom == nom):
+            raise Exception("Declaration dupliquee de la variable : "+str(nom))
+        elif(Vars[i].nom == ""):
+            break
+    ns = S(nom)
+    Vars.append(ns)
+    return Vars[len(Vars)-1]
 
 def chercher(nom):
-    Vars = []
-    for i in Vars:
-        if (nom == Vars[i]):
+    global Vars
+    for i in range (len(Vars) -1, -1, -1):
+        if(Vars[i].nom == nom):
             return Vars[i]
-        else:
-            raise Exception("Error élément non déclaré")
+    raise Exception("Variable non trouvee : "+str(nom))
+
 
 def begin():
-    global Vars
-    Vars.append[{}]
-    return Vars
+    global Vars 
+    Vars.append(S(""))
 
 def end():
-    Vars = []
+    global Vars
+    while(Vars[(len(Vars) -1 )].nom !="" ):
+        Vars.pop()
     Vars.pop()
-    return Vars
+
+
+
 
 
 "#########################################################Optimisation Const##############################################################"
@@ -346,5 +348,4 @@ while(current_token.type_ != 'EOF'):
     #print(A)
     gencode(A)
     next()
-
 
