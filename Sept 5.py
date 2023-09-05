@@ -66,7 +66,7 @@ def check(T):
 
 def accept(T):
     if(not check(T)):
-        raise Exception("Error Fatal ! ")
+        raise Exception("Error Fatal : trouve "+str(current_token.type_))
     
 
 "################################################# Analyse lexicale ##################################################################"
@@ -75,7 +75,7 @@ def init_analyse_lexicale(codesource):
     content = file.read()
     global tab_global 
     global tokens_global 
-    print("printing the contents of the file : \n" + content)
+    #print("printing the contents of the file : \n" + content)
     content.strip(' ')
     lines = content.split('\n')
     for line in lines :
@@ -135,7 +135,7 @@ def noeudA():
     global current_token
     global current_line
     if(check("const")):
-        print("found : "+str(current_token.valeur))
+        #print("found : "+str(current_token.valeur))
         return Noeud("const",last_token.valeur,[])
     elif(check("identificateur")):
         print("error")
@@ -166,7 +166,7 @@ def noeudP():
         return Noeud('!',None,N)
     elif(check('+')):
         N = noeudP()
-        print("printing from nouedP"+ str(N))
+        #print("printing from nouedP"+ str(N))
         return N
     else:
         N = noeudA()
@@ -200,7 +200,7 @@ def noeudE(prio_min):
         print("end of file found")
         return None
     N = noeudP()
-    print("printing N from nouedE: "+str(N))
+    #print("printing N from nouedE: "+str(N))
     while(operateurs.get(current_token.type_) != None):
         
         op = operateurs.get(current_token.type_)
@@ -230,7 +230,8 @@ dict_gencode = {
     '%'     :'mod',
     '!'     :'not',
     'drop'  :'drop 1',
-    'EOF'   :'End of program !!'
+    'EOF'   :'End of program !!!',
+    'vide'  : ''
         }
 
 def gencode(N):
@@ -245,12 +246,12 @@ def gencode(N):
       
     else:
         for k in range(len(N.enfant)):
-            print("parent : "+ str(N.type_)) 
+            #print("parent : "+ str(N.type_)) 
             gencode(N.enfant[k])
         if(dict_gencode[N.type_] != None):
             print(dict_gencode[N.type_])
         else:
-            raise Exception("Error Fatal")
+            raise Exception("Error Fatal ")
             
 "########################################################Noeud I ######################################################################"
 
@@ -269,9 +270,12 @@ def noeudI():
         return Noeud('debug',None,[N])
     else: 
         N = noeudE(0)
-        if(not check('EOF')):
+        if( N.type_ == 'EOF'):
             print("End of file reached")
-        return Noeud('EOF',None,[N])
+            return Noeud('EOF',None,[N])
+        else:
+            accept(';')
+            return Noeud('drop',None,[N])
         
 "######################################################## Analyse syntaxique ##########################################################"
 
@@ -353,7 +357,6 @@ print("********************* Generation du code ***************************")
 while(current_token.type_ != 'EOF'):
     print("\n")
     A = analyse_syntaxique()
-    print("************************************************************************************************************")
     #print(A)
     gencode(A)
     
