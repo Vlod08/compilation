@@ -414,10 +414,19 @@ def optimisation_const(N):
         if(len(N.enfant) >1):
             D = optimisation_const(N.enfant[1])
             if(G.type_ == 'const' and D.type_ == 'const'):
-                exp = str(G.type_) + str(N.type_) + str(D.type_)
+                exp = str(G.valeur) + str(N.type_) + str(D.valeur)
                 return Noeud("const",eval(exp),[])
             else:
                 N.enfant[1] = D
+        elif(N.type_ == '+'):
+            if(G.type_ == 'const'):
+                exp = str(N.type_) + str(G.valeur)
+                return Noeud("const",eval(exp),[])
+        elif(N.type_ == '-u'):
+            if(G.type_ == 'const'):
+                return Noeud("const", -  int(G.valeur),[])
+            
+
                 
         N.enfant[0] = G
         return N  
@@ -437,6 +446,7 @@ while(current_token.type_ != 'EOF'):
     nbVar = 0
     AnaSem(A)
     print('resn '+ str(nbVar))
+    optimisation_const(A)
     
     #print(A)
     gencode(A)
