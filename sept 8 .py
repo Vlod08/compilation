@@ -4,7 +4,7 @@ Created on Tue Aug 29 16:29:14 2023
 
 @author: lvengad
 """
-
+ 
 
 mots_cles = ['EOF','+','-','*','/','%','!','&','<',"<=",'>',">=","==","!=","&&","||",'(',')','[',']','{',
             '}',',',';','=','int',"for","while","do","if","else","break","continue","return"]
